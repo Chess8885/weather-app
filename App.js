@@ -10,6 +10,7 @@ export default function App() {
 
   const [errorMessage, setErrorMessage] = useState(null)
   const [currentWeather, setCurrentWeather] = useState(null)
+  const [unitsSystem, setUnitsSystem] = useState("metric")
 
   useEffect(() => {
     load()
@@ -23,7 +24,7 @@ export default function App() {
       }
       const location = await Location.getCurrentPositionAsync()
       const { latitude, longitude } = location.coords
-      const weatherURL = `${BASE_WEATHER_URL}lat=${latitude}&lon=${longitude}&appid=${WEATHER_API_KEY}`
+      const weatherURL = `${BASE_WEATHER_URL}lat=${latitude}&lon=${longitude}&units=${unitsSystem}&appid=${WEATHER_API_KEY}`
       
       const response = await fetch(weatherURL)
       const result = await response.json()
@@ -34,7 +35,9 @@ export default function App() {
         setErrorMessage(result.message)
       }
       alert(`Latitude : ${latitude}, Longitude : ${longitude}`)
-    } catch (error) {}
+    } catch (error) {
+      setErrorMessage(error.message)
+    }
   }
 
   if (currentWeather) {
