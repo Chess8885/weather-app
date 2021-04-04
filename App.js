@@ -17,6 +17,9 @@ export default function App() {
         setErrorMessage("Access to location is needed to run the app")
         return
       }
+      const location = await Location.getCurrentPositionAsync()
+      const { latitude, longitude } = location.coords
+      alert(`Latitude : ${latitude}, Longitude : ${longitude}`)
     } catch (error) {}
   }
   return (
