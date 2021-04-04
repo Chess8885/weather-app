@@ -3,9 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location'
 
+const WEATHER_API_KEY="b9e12082e2b094e05168d437a9830eba"
+const BASE_WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather?'
+
 export default function App() {
 
   const [errorMessage, setErrorMessage] = useState(null)
+  const [currentWeather, setCurrentWeather] = useState(null)
 
   useEffect(() => {
     load()
@@ -19,15 +23,35 @@ export default function App() {
       }
       const location = await Location.getCurrentPositionAsync()
       const { latitude, longitude } = location.coords
+      const weatherURL = `${BASE_WEATHER_URL}lat=${latitude}&lon=${longitude}&appid=${WEATHER_API_KEY}`
+      
+      const response = await fetch(weatherURL)
+      const result = await response.json()
+
+      if (response.ok) {
+        setCurrentWeather(result)
+      } else {
+        setErrorMessage(result.message)
+      }
       alert(`Latitude : ${latitude}, Longitude : ${longitude}`)
     } catch (error) {}
   }
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+
+  if (currentWeather) {
+    const { main : { temp } } = currentWeather
+    return (
+      <View style={styles.container}>
+        <Text>{ temp }</Text>
+        <StatusBar style="auto" />
+      </View>
+     )} else {
+      return (
+        <View style={styles.container}>
+        <Text>{ errorMessage }</Text>
+        <StatusBar style="auto" />
+      </View>
+      )
+    }
 }
 
 const styles = StyleSheet.create({
